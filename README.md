@@ -19,6 +19,162 @@ La distinción entre paquetes regulares y paquetes de espacio de nombres (namesp
 
 El término "librería" o "biblioteca", aunque ubicuo, carece de una definición técnica estricta en la documentación oficial de Python, utilizándose de manera más informal para describir colecciones de paquetes diseñadas para proporcionar utilidades orientadas a programas externos. Una librería, como NumPy o Pandas, integra múltiples paquetes y módulos para resolver problemas complejos en un dominio específico, como la computación científica o el análisis de datos. En el contexto de la Ingeniería de Software Basada en Componentes (CBSE), el "componente" se define como una unidad de software casi independiente y reemplazable que cumple una función clara y se comunica a través de interfaces bien definidas. A diferencia de un simple módulo de código, un componente es una construcción de mayor nivel que enfatiza la separación de preocupaciones y la independencia de implementación, permitiendo que un sistema se ensamble a partir de piezas preexistentes y probadas.
 
+### Ejemplo Práctico
+```Python
+import flet as ft
+from dataclasses import dataclass
+
+@dataclass
+class Usuario:
+    nombre: str
+    rol: str
+    color_borde: str = ft.Colors.BLUE
+
+class TarjetaPerfil(ft.Container):
+    def __init__(self, data: Usuario):
+        super().__init__()
+        self.data = data
+        
+        self.padding = 10
+        self.border_radius = 10
+        self.border = ft.Border.all(2, self.data.color_borde)
+        self.width = 250  
+        
+        self.content = ft.Column(
+            controls=[
+                ft.Text(self.data.nombre, weight=ft.FontWeight.BOLD, size=20),
+                ft.Text(self.data.rol, italic=True),
+                ft.Button("Ver Perfil", on_click=self.saludar)
+            ],
+            tight=True,
+            horizontal_alignment=ft.CrossAxisAlignment.START
+        )
+
+    def saludar(self, e):
+        print(f"Interactuando con: {self.data.nombre}")
+
+def main(page: ft.Page):
+    page.title = "Unidad 2: Data Class corregido"
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+
+    # Datos
+    u1 = Usuario("Ana García", "Desarrolladora Senior", ft.Colors.GREEN)
+    u2 = Usuario("Carlos Ruiz", "Arquitecto de Software", ft.Colors.BLUE)
+
+    tarjetas = [TarjetaPerfil(u1), TarjetaPerfil(u2)]
+
+    page.add(
+        ft.Text("Lista de Usuarios", size=30, weight="bold"),
+        ft.Row(
+            tarjetas, 
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=20
+        )
+    )
+
+if __name__ == "__main__":
+    
+    try:
+        ft.run(main)
+    except AttributeError:
+        ft.app(main)
+```
+**1. Definición del Modelo de Datos (dataclass)**
+
+En este bloque se define la estructura de los datos que usará la aplicación. Usar @dataclass ahorra escribir el método __init__ manualmente.
+
+```Python
+@dataclass
+class Usuario:
+    nombre: str
+    rol: str
+    color_borde: str = ft.Colors.BLUE
+```
+- Propósito: Crear un "molde" para los usuarios.
+- Detalle: Define qué información necesita cada perfil (nombre, rol y un color opcional para el borde).
+
+**2. El Componente Visual (TarjetaPerfil)**
+
+Aquí es donde ocurre la magia de la Programación Orientada a Objetos aplicada a la UI. Se crea un componente personalizado que hereda de ft.Container.
+
+```Python
+class TarjetaPerfil(ft.Container):
+    def __init__(self, data: Usuario):
+        super().__init__()
+        self.data = data
+        
+        # Configuración visual del contenedor
+        self.padding = 10
+        self.border_radius = 10
+        self.border = ft.Border.all(2, self.data.color_borde)
+        self.width = 250  
+        
+        # Contenido interno: Una columna con textos y un botón
+        self.content = ft.Column(
+            controls=[
+                ft.Text(self.data.nombre, weight=ft.FontWeight.BOLD, size=20),
+                ft.Text(self.data.rol, italic=True),
+                ft.Button("Ver Perfil", on_click=self.saludar)
+            ],
+            tight=True,
+            horizontal_alignment=ft.CrossAxisAlignment.START
+        )
+
+    def saludar(self, e):
+        print(f"Interactuando con: {self.data.nombre}")
+```
+- super().__init__(): Inicializa las propiedades básicas del contenedor de Flet.
+- Encapsulamiento: La tarjeta sabe cómo dibujarse a sí misma usando el objeto Usuario que recibe.
+- Interactividad: El método saludar maneja el evento de clic del botón.
+
+**3. La Función Principal (main)**
+
+Este bloque configura la ventana de la aplicación y orquesta la creación de los elementos.
+
+```Python
+def main(page: ft.Page):
+    page.title = "Unidad 2: Data Class corregido"
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+
+    # Creación de instancias de datos
+    u1 = Usuario("Ana García", "Desarrolladora Senior", ft.Colors.GREEN)
+    u2 = Usuario("Carlos Ruiz", "Arquitecto de Software", ft.Colors.BLUE)
+
+    # Creación de la lista de componentes visuales
+    tarjetas = [TarjetaPerfil(u1), TarjetaPerfil(u2)]
+
+    # Renderizado en la página
+    page.add(
+        ft.Text("Lista de Usuarios", size=30, weight="bold"),
+        ft.Row(
+            tarjetas, 
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=20
+        )
+    )
+```
+
+- Instanciación: Se crean dos objetos Usuario.
+- Mapeo: Se transforman esos datos en objetos TarjetaPerfil.
+- ft.Row: Organiza las tarjetas de forma horizontal.
+
+**4. Punto de Entrada y Compatibilidad**
+
+Este último bloque asegura que la aplicación se ejecute correctamente independientemente de la versión de Flet o del entorno.
+
+```Python
+if __name__ == "__main__":
+    try:
+        ft.run(main) # Método moderno
+    except AttributeError:
+        ft.app(main) # Método tradicional/fallback
+```
+
+**Ejecución**
+<img width="1568" height="874" alt="image" src="https://github.com/user-attachments/assets/13ce717b-55b4-4216-9311-f106903df0e2" />
+
 ## 2.2 Uso de librerías proporcionadas por el lenguaje
 Python se distingue por su filosofía de "baterías incluidas", lo que significa que el lenguaje se distribuye con una biblioteca estándar extensa que permite a los desarrolladores abordar una amplia variedad de tareas sin depender de paquetes externos. Esta biblioteca estándar no es solo una conveniencia, sino una garantía de portabilidad y estabilidad, ya que sus módulos están diseñados para funcionar de manera coherente en diversas plataformas y arquitecturas.
 
@@ -37,6 +193,292 @@ Para la gestión de datos y algoritmos, Python provee módulos potentes como col
 A pesar de su amplitud, la biblioteca estándar ha experimentado un proceso de revisión crítica bajo el PEP 594, que propone la eliminación de "baterías muertas". Muchos módulos incluidos en las primeras versiones de Python se han vuelto obsoletos debido a cambios tecnológicos o han sido superados por alternativas de la comunidad mucho más robustas. La eliminación de estos módulos, que incluyen utilidades para formatos de audio de los años 80 como sunau o implementaciones de red ineficientes como cgi, reduce la carga de mantenimiento para el equipo central de desarrollo de CPython y mejora la seguridad al eliminar superficies de ataque poco probadas.
 
 Este adelgazamiento de la biblioteca estándar es particularmente beneficioso para despliegues modernos en entornos con recursos limitados, como dispositivos de Internet de las Cosas (IoT) o aplicaciones que se ejecutan en navegadores web mediante WebAssembly (WASM). El calendario de depreciación asegura que los desarrolladores tengan tiempo suficiente para migrar sus aplicaciones: los módulos afectados emitieron advertencias en la versión 3.11, se mantuvieron con advertencias en la 3.12 y son eliminados definitivamente en la 3.13. Para aquellos casos donde el código antiguo sigue siendo necesario, la licencia permisiva de Python permite a las organizaciones "vendorizar" los módulos eliminados, incorporando el código directamente en sus bases de proyectos privados.
+
+### Ejemplo Práctico
+```Python
+import flet as ft
+import random
+
+
+def main(page: ft.Page):
+    page.title = "Piedra, Papel o Tijeras"
+    page.window_width = 420
+    page.window_height = 650
+    page.bgcolor = "#0f172a"
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+
+    opciones = ["Piedra", "Papel", "Tijeras"]
+    emojis = {"Piedra": "🪨", "Papel": "📄", "Tijeras": "✂️"}
+
+    # Marcador
+    score_user = 0
+    score_cpu = 0
+
+    marcador = ft.Text(
+        "Tú 0  |  0 CPU",
+        size=20,
+        color="white",
+        weight="bold"
+    )
+
+    resultado = ft.Text(size=24, weight="bold")
+    user_pick = ft.Text(color="white")
+    cpu_pick = ft.Text(color="white")
+
+    # Animación
+    resultado_container = ft.Container(
+        content=resultado,
+        padding=15,
+        border_radius=15,
+        bgcolor="#1e293b",
+        animate=ft.Animation(500, ft.AnimationCurve.EASE_IN_OUT),
+    )
+
+    def jugar(eleccion):
+        nonlocal score_user, score_cpu
+
+        maquina = random.choice(opciones)
+
+        user_pick.value = f"Tú: {emojis[eleccion]} {eleccion}"
+        cpu_pick.value = f"CPU: {emojis[maquina]} {maquina}"
+
+        # Lógica
+        if eleccion == maquina:
+            resultado.value = "Empate "
+            resultado_container.bgcolor = "#334155"
+
+        elif (
+            (eleccion == "Piedra" and maquina == "Tijeras")
+            or (eleccion == "Papel" and maquina == "Piedra")
+            or (eleccion == "Tijeras" and maquina == "Papel")
+        ):
+            score_user += 1
+            resultado.value = "¡Ganaste! "
+            resultado_container.bgcolor = "#065f46"
+
+        else:
+            score_cpu += 1
+            resultado.value = "Perdiste "
+            resultado_container.bgcolor = "#7f1d1d"
+
+        marcador.value = f"Tú {score_user}  |  {score_cpu} CPU"
+
+        page.update()
+
+    def boton_jugada(nombre, color):
+        return ft.Container(
+            content=ft.ElevatedButton(
+                content=ft.Column(
+                    [
+                        ft.Text(emojis[nombre], size=30),
+                        ft.Text(nombre)
+                    ],
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                ),
+                style=ft.ButtonStyle(
+                    bgcolor=color,
+                    color="white",
+                    shape=ft.RoundedRectangleBorder(radius=15),
+                    padding=15,
+                ),
+                on_click=lambda e: jugar(nombre),
+            ),
+            expand=True,
+        )
+
+    # Tarjeta principal
+    card = ft.Container(
+        width=360,
+        padding=25,
+        border_radius=25,
+        bgcolor="#1e293b",
+        shadow=ft.BoxShadow(
+            spread_radius=2,
+            blur_radius=15,
+            color="black",
+        ),
+        content=ft.Column(
+            [
+                ft.Text(
+                    "Piedra, Papel o Tijeras",
+                    size=28,
+                    weight="bold",
+                    color="white",
+                    text_align="center",
+                ),
+                marcador,
+                ft.Divider(color="#334155"),
+
+                ft.Text("Elige tu jugada:", color="white"),
+                ft.Row(
+                    [
+                        boton_jugada("Piedra", "#2563eb"),
+                        boton_jugada("Papel", "#9333ea"),
+                        boton_jugada("Tijeras", "#f97316"),
+                    ],
+                    spacing=10,
+                ),
+
+                ft.Divider(color="#334155"),
+                user_pick,
+                cpu_pick,
+                resultado_container,
+            ],
+            spacing=15,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+    )
+
+    page.add(card)
+
+
+ft.app(target=main)
+```
+
+**1. Configuración de la Página y Variables de Estado**
+
+En este bloque se define el aspecto visual de la ventana y se inicializan los datos que rastrearán el progreso del juego.
+
+```Python
+def main(page: ft.Page):
+    page.title = "Piedra, Papel o Tijeras"
+    page.window_width = 420
+    page.window_height = 650
+    page.bgcolor = "#0f172a" # Fondo oscuro tipo "slate"
+
+    opciones = ["Piedra", "Papel", "Tijeras"]
+    emojis = {"Piedra": "🪨", "Papel": "📄", "Tijeras": "✂️"}
+
+    # Marcador (Estado inicial)
+    score_user = 0
+    score_cpu = 0
+```
+- Propósito: Establece el lienzo de la aplicación y las reglas básicas (opciones y emojis).
+- Variables de score: Se declaran aquí para que persistan mientras la aplicación esté abierta.
+
+**2. Definición de Componentes Visuales Dinámicos**
+
+Aquí se crean los elementos de texto y contenedores que cambiarán su contenido durante el juego.
+
+```Python
+    marcador = ft.Text("Tú 0  |  0 CPU", size=20, color="white", weight="bold")
+    resultado = ft.Text(size=24, weight="bold")
+    user_pick = ft.Text(color="white")
+    cpu_pick = ft.Text(color="white")
+
+    # Contenedor con animación para el resultado
+    resultado_container = ft.Container(
+        content=resultado,
+        padding=15,
+        border_radius=15,
+        bgcolor="#1e293b",
+        animate=ft.Animation(500, ft.AnimationCurve.EASE_IN_OUT),
+    )
+```
+animate: Esta propiedad es clave. Permite que cuando el color de fondo (bgcolor) cambie (verde si ganas, rojo si pierdes), la transición sea suave y no un salto brusco.
+
+**3. Lógica del Juego (Función jugar)**
+
+Este es el "cerebro" del programa. Se ejecuta cada vez que el usuario presiona un botón.
+
+```Python
+    def jugar(eleccion):
+        nonlocal score_user, score_cpu # Permite modificar variables fuera de la función
+
+        maquina = random.choice(opciones) # Elección aleatoria de la CPU
+
+        # Lógica de comparación
+        if eleccion == maquina:
+            resultado.value = "Empate "
+            resultado_container.bgcolor = "#334155"
+        elif (
+            (eleccion == "Piedra" and maquina == "Tijeras")
+            or (eleccion == "Papel" and maquina == "Piedra")
+            or (eleccion == "Tijeras" and maquina == "Papel")
+        ):
+            score_user += 1
+            resultado.value = "¡Ganaste! "
+            resultado_container.bgcolor = "#065f46" # Verde
+        else:
+            score_cpu += 1
+            resultado.value = "Perdiste "
+            resultado_container.bgcolor = "#7f1d1d" # Rojo
+
+        marcador.value = f"Tú {score_user}  |  {score_cpu} CPU"
+        page.update() # Refresca la interfaz para mostrar cambios
+```
+4. Fábrica de Botones (boton_jugada)
+Para no repetir código tres veces (uno para cada opción), se crea una función que genera botones personalizados.
+
+```Python
+    def boton_jugada(nombre, color):
+        return ft.Container(
+            content=ft.ElevatedButton(
+                content=ft.Column(
+                    [ft.Text(emojis[nombre], size=30), ft.Text(nombre)],
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                ),
+                on_click=lambda e: jugar(nombre), # Envía la elección a la función jugar
+            ),
+            expand=True,
+        )
+```
+Lambda: Se usa lambda e: jugar(nombre) para que la función no se ejecute inmediatamente al cargar la página, sino solo al hacer clic.
+
+**5. Construcción de la Interfaz (Layout)**
+
+Finalmente, se agrupa todo dentro de un contenedor principal (card) con sombras y bordes redondeados.
+
+```Python
+    card = ft.Container(
+        content=ft.Column([
+            ft.Text("Piedra, Papel o Tijeras", size=28, weight="bold"),
+            marcador,
+            ft.Row([
+                boton_jugada("Piedra", "#2563eb"),
+                boton_jugada("Papel", "#9333ea"),
+                boton_jugada("Tijeras", "#f97316"),
+            ]),
+            user_pick,
+            cpu_pick,
+            resultado_container,
+        ])
+    )
+    page.add(card)
+```
+**Ejecución**
+<img width="1562" height="867" alt="image" src="https://github.com/user-attachments/assets/2da2e4c8-41f4-4a75-ba19-148be716ce0f" />
+
+**Estructura y Funcionamiento del Proyecto**
+
+El desarrollo se basa en el aprovechamiento de librerías y la aplicación de patrones de diseño que optimizan la comunicación y el procesamiento de datos.
+
+1. Gestión de Librerías
+- Librerías Externas (Flask): Se utiliza para la construcción del entorno web. Flask abstrae la complejidad de la comunicación cliente-servidor mediante herramientas clave:
+  - @app.route: Gestión de rutas de navegación.
+  - request: Manejo de solicitudes de datos.
+  - render_template: Renderizado de vistas dinámicas.
+
+- Librerías Estándar (Random): Se emplea la librería nativa de Python para generar valores aleatorios, permitiendo simular la toma de decisiones de la computadora sin depender de instalaciones externas.
+
+2. Arquitectura del Sistema
+
+El proyecto sigue un modelo de Separación de Responsabilidades, dividiendo la lógica en tres etapas fundamentales:
+
+| Etapa         | Componente          | Función                                                   |
+|--------------|--------------------|-----------------------------------------------------------|
+| Entrada       | request             | Captura de datos enviados por el usuario.                |
+| Procesamiento | determinar_ganador  | Ejecución de la lógica interna del juego.                |
+| Salida        | render_template     | Presentación de resultados en la interfaz visual.        |
+
+**Visualización**
+Web
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/6bccc669-2d90-4743-9022-29b317e29aed" />
+
+App
+<img width="1080" height="2340" alt="image" src="https://github.com/user-attachments/assets/4e9d1600-8992-4dbe-9caf-7516cf680016" />
+
 
 ## 2.3 Creación de componentes (visuales y no visuales) definidos por el usuario
 
@@ -97,3 +539,213 @@ El panorama de herramientas para gestionar el ciclo de vida de un paquete ha mad
 Poetry se ha consolidado como el estándar para muchos proyectos de librerías, gracias a su resolutor de dependencias inteligente que evita conflictos de versiones y su facilidad para publicar en PyPI con un solo comando. Por otro lado, uv, una herramienta extremadamente rápida escrita en Rust, ha irrumpido en el mercado en 2024-2025, ofreciendo velocidades de instalación y resolución de dependencias que superan por órdenes de magnitud a pip y poetry, convirtiéndose en la opción predilecta para entornos de integración continua (CI). Hatch y PDM también ofrecen alternativas robustas; Hatch se distingue por su excelente manejo de múltiples entornos de desarrollo y pruebas, mientras que PDM destaca por su estricto cumplimiento de los estándares PEP y su soporte para entornos sin carpetas virtuales tradicionales (venv-less).
 
 La elección de estas herramientas afecta directamente la mantenibilidad del proyecto. Un buen gestor de paquetes genera un archivo de bloqueo (lockfile), como poetry.lock o pdm.lock, que registra las versiones exactas de cada dependencia y sub-dependencia utilizada durante el desarrollo. Este archivo garantiza que cualquier otro desarrollador o servidor de despliegue pueda recrear exactamente el mismo entorno de ejecución, eliminando el clásico problema de "en mi máquina funciona".
+
+### Ejemplo práctico
+```python
+import flet as ft
+from product_card import ProductCard
+
+# Lista de productos
+productos = [
+    {"id": 1, "nombre": "Laptop Gamer", "descripcion": "Ryzen 7 16GB RAM", "precio": 25000, "ruta_imagen": "laptopgamer.jpg"},
+    {"id": 2, "nombre": "Mouse Gamer", "descripcion": "Mouse RGB", "precio": 350, "ruta_imagen": "mouse.jpg"},
+    {"id": 3, "nombre": "Teclado Mecánico", "descripcion": "Switch blue RGB", "precio": 1200, "ruta_imagen": "teclado.jpg"},
+    {"id": 4, "nombre": "Audifonos Gamer", "descripcion": "Sonido envolvente", "precio": 900, "ruta_imagen": "audifonosg.jpg"},
+    {"id": 5, "nombre": "Televisión 32", "descripcion": "Full HD 144Hz", "precio": 4200, "ruta_imagen": "televisor.jpg"},
+    {"id": 6, "nombre": "Audifonos", "descripcion": "Full HD 144Hz", "precio": 4200, "ruta_imagen": "audifonos.jpg"},
+    {"id": 7, "nombre": "Cargador", "descripcion": "Full HD 144Hz", "precio": 4200, "ruta_imagen": "cargador.jpg"},
+    {"id": 8, "nombre": "Impresora", "descripcion": "Full HD 144Hz", "precio": 4200, "ruta_imagen": "impresora.jpg"},
+    {"id": 9, "nombre": "Tablet", "descripcion": "Full HD 144Hz", "precio": 4200, "ruta_imagen": "tablet.jpg"},
+    {"id": 10, "nombre": "Smartwatch", "descripcion": "Full HD 144Hz", "precio": 4200, "ruta_imagen": "smartwatch.jpg"},
+    {"id": 11, "nombre": "Laptop", "descripcion": "Full HD 144Hz", "precio": 4200, "ruta_imagen": "laptop.jpg"},
+    {"id": 12, "nombre": "Bocina", "descripcion": "Full HD 144Hz", "precio": 4200, "ruta_imagen": "bocina.jpg"},
+    {"id": 13, "nombre": "Multicontactos", "descripcion": "Full HD 144Hz", "precio": 4200, "ruta_imagen": "multicontacto.jpg"},
+    {"id": 14, "nombre": "Microfono", "descripcion": "Full HD 144Hz", "precio": 4200, "ruta_imagen": "microfono.jpg"},
+    {"id": 15, "nombre": "Router", "descripcion": "Full HD 144Hz", "precio": 4200, "ruta_imagen": "router.jpg"},
+]
+
+def main(page: ft.Page):
+    page.title = "TECHNOLOGY STORE"
+    page.scroll = "auto"
+    page.bgcolor = "#000000"
+    page.padding = 20
+    page.assets_dir = "assets"
+
+    carrito = []
+    favoritos = []
+    
+    carrito_text = ft.Text("0", size=14)
+    favoritos_text = ft.Text("0", size=14)
+    
+    def mostrar_mensaje(msg):
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text(msg),
+        )
+        page.snack_bar.open = True
+        page.update()
+    
+    def agregar_carrito(producto):
+        carrito.append(producto)
+        carrito_text.value = str(len(carrito))
+        mostrar_mensaje(f"{producto['nombre']} agregado")
+        page.update()
+    
+    def agregar_favorito(producto):
+        if producto not in favoritos:
+            favoritos.append(producto)
+        else:
+            favoritos.remove(producto)
+        favoritos_text.value = str(len(favoritos))
+        page.update()
+
+    # HEADER
+    header = ft.Row(
+        [
+            ft.Text("TECHNOLOGY STORE", size=26, weight="w500"),
+            ft.Row(
+                [
+                    ft.Row([ft.Text("♡"), favoritos_text], spacing=4),
+                    ft.Row([ft.Text("🛒"), carrito_text], spacing=4),
+                ],
+                spacing=15
+            )
+        ],
+        alignment="spaceBetween"
+    )
+
+    # TARJETAS
+    tarjetas = []
+    for p in productos:
+        card = ProductCard(
+            p["nombre"],
+            p["descripcion"],
+            p["precio"],
+            p["ruta_imagen"]
+        )
+        
+        # Botón carrito
+        card.agregar = lambda e, prod=p: agregar_carrito(prod)
+
+        # Botón favorito funcional
+        def make_fav_handler(prod, card_ref):
+            def handler(e):
+                agregar_favorito(prod)
+
+                # Cambiar icono visual
+                if prod in favoritos:
+                    card_ref.fav_icon.value = "❤️"
+                else:
+                    card_ref.fav_icon.value = "🤍"
+                
+                card_ref.fav_icon.update()
+            return handler
+
+        
+
+        tarjetas.append(
+            ft.Container(
+                content=card,
+                padding=5
+            )
+        )
+
+    # GRID
+    grid = ft.Row(
+        controls=tarjetas,
+        wrap=True,
+        spacing=15,
+        run_spacing=15
+    )
+
+    page.add(
+        header,
+        ft.Container(height=10),
+        grid
+    )
+
+if __name__ == "__main__":
+    ft.app(target=main, assets_dir="assets")
+```
+**1. El "Inventario" (Lista de Diccionarios)**
+En lugar de escribir cada tarjeta a mano, el código utiliza una lista de Python llamada productos.
+
+- Propósito: Almacenar la información técnica de cada artículo (ID, nombre, precio, descripción e imagen).
+- Escalabilidad: Si mañana quieres agregar 100 productos más, solo los añades a esta lista y la interfaz se actualizará sola.
+
+**2. Gestión de Estado y Feedback**
+Dentro de main, se definen las listas que guardan la "memoria" de la sesión del usuario.
+
+```Python
+carrito = []
+favoritos = []
+
+# Referencias visuales para los contadores del header
+carrito_text = ft.Text("0", size=14)
+favoritos_text = ft.Text("0", size=14)
+mostrar_mensaje: Utiliza un SnackBar (esa pequeña notificación que sale abajo) para avisar al usuario que un producto fue agregado.
+
+agregar_carrito y agregar_favorito: Funciones que modifican las listas de memoria y actualizan el texto de los contadores en la pantalla.
+```
+
+**3. El Header (Barra de Navegación)**
+Este bloque crea la parte superior de la tienda.
+
+```Python
+header = ft.Row(
+    [
+        ft.Text("TECHNOLOGY STORE", size=26, weight="w500"),
+        ft.Row(
+            [
+                ft.Row([ft.Text("♡"), favoritos_text], spacing=4),
+                ft.Row([ft.Text("🛒"), carrito_text], spacing=4),
+            ],
+            spacing=15
+        )
+    ],
+    alignment="spaceBetween"
+)
+```
+
+Layout: Usa un ft.Row con alignment="spaceBetween" para que el nombre de la tienda quede a la izquierda y los iconos a la derecha.
+
+**4. Generación Dinámica de Tarjetas**
+
+Este es el bloque más complejo. Itera sobre la lista de productos y crea un objeto ProductCard por cada uno.
+
+```Python
+for p in productos:
+    card = ProductCard(p["nombre"], p["descripcion"], p["precio"], p["ruta_imagen"])
+    
+    # Asignación de funciones a los botones de la tarjeta
+    card.agregar = lambda e, prod=p: agregar_carrito(prod)
+
+    # Manejador de favoritos con lógica de cambio de icono (❤️/🤍)
+    def make_fav_handler(prod, card_ref):
+        # ... lógica para alternar favorito ...
+```
+
+- Inyección de lógica: El componente ProductCard (que viene de otro archivo) recibe las funciones agregar_carrito y agregar_favorito.
+- Importante: Se usa un "handler" para que cada tarjeta sepa exactamente a qué producto se refiere cuando haces clic en ella.
+
+**5. El Grid de Productos y Renderizado**
+
+Finalmente, se organizan todas las tarjetas en una cuadrícula adaptable.
+
+```Python
+grid = ft.Row(
+    controls=tarjetas,
+    wrap=True, # Permite que las tarjetas pasen a la siguiente fila si no caben
+    spacing=15,
+    run_spacing=15
+)
+```
+- wrap=True: Es fundamental. Convierte la fila en una "malla" o grid. Si reduces el tamaño de la ventana, las tarjetas se acomodarán hacia abajo automáticamente.
+- assets_dir: Al final del código, se especifica dónde están guardadas las fotos de los productos para que Flet pueda encontrarlas.
+
+**Visualizaciones**
+
+Ejecición
+<img width="1567" height="873" alt="image" src="https://github.com/user-attachments/assets/c6775f95-b26b-4fd9-ad25-ed8270b6abd6" />
+
+Web
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3535c0c7-2f07-46dc-a122-d0d66821db0a" />
