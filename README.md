@@ -749,3 +749,10 @@ Ejecición
 
 Web
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3535c0c7-2f07-46dc-a122-d0d66821db0a" />
+
+# Bibliografía 
+Sturtz, J. (s.f.). Python Modules and Packages: An Introduction. Real Python. https://realpython.com/python-modules-packages/
+
+Hesselgren, C. (2021, 23 de noviembre). Software Modularity: 3 Critical Areas to Master. Modular Management. https://www.modularmanagement.com/blog/software-modularity
+
+Python Software Foundation. (s.f.). 6. Módulos. Tutorial de Python. https://docs.python.org/es/3/tutorial/modules.html
